@@ -48,6 +48,15 @@
                 android:layout_height="wrap_content"
                 android:text="⭐⭐⭐⭐"
                 android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/restaurantLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textSize="12sp"/>
+
+
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

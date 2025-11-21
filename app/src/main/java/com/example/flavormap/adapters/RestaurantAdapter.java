@@ -34,6 +34,8 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Re
         holder.cuisine.setText(restaurant.getCuisine());
         holder.rating.setText(restaurant.getRating());
         holder.image.setImageResource(restaurant.getImageResId());
+        holder.location.setText(restaurant.getLocation());
+
     }
 
     @Override
@@ -41,17 +43,19 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Re
         return restaurantList.size();
     }
 
-    static class RestaurantViewHolder extends RecyclerView.ViewHolder {
+    public class RestaurantViewHolder extends RecyclerView.ViewHolder {
 
+        TextView name, cuisine, rating, location;
         ImageView image;
-        TextView name, cuisine, rating;
 
         public RestaurantViewHolder(@NonNull View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.restaurantImage);
             name = itemView.findViewById(R.id.restaurantName);
             cuisine = itemView.findViewById(R.id.restaurantCuisine);
             rating = itemView.findViewById(R.id.restaurantRating);
+            location = itemView.findViewById(R.id.restaurantLocation);
+            image = itemView.findViewById(R.id.restaurantImage);
         }
     }
+
 }
