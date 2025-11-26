@@ -1,0 +1,153 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:gravity="center_horizontal">
+
+        <!-- Top bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/detailsLogo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_flavormap" />
+
+            <TextView
+                android:id="@+id/detailsTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Flavor Map"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:paddingStart="8dp"/>
+
+            <ImageView
+                android:id="@+id/editRestaurant"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/edit"
+                android:padding="4dp"
+                android:layout_marginStart="16dp"/>
+
+            <ImageView
+                android:id="@+id/deleteRestaurant"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/delete_icon"
+                android:padding="4dp"
+                android:layout_marginStart="16dp"/>
+        </LinearLayout>
+
+        <!-- Restaurant Image -->
+        <ImageView
+            android:id="@+id/detailImage"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/ic_add" />
+
+        <!-- Name -->
+        <TextView
+            android:id="@+id/detailName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Tags / Cuisine -->
+        <TextView
+            android:id="@+id/detailTags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tags:"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Location -->
+        <TextView
+            android:id="@+id/detailLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location:"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Phone -->
+        <TextView
+            android:id="@+id/detailPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Phone:"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Rating -->
+        <TextView
+            android:id="@+id/detailRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"/>
+
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/detailDescriptionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/detailDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_marginTop="4dp"/>
+
+
+        <!-- Buttons: View Map, Directions, Share -->
+
+        <Button
+            android:id="@+id/viewMapBtn"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="View Map" />
+
+        <Button
+            android:id="@+id/directionsBtn"
+            android:layout_height="wrap_content"
+            android:text="Directions"
+            android:layout_width="150dp"
+            android:layout_marginTop="12dp"/>
+
+        <Button
+            android:id="@+id/shareBtn"
+            android:layout_height="wrap_content"
+            android:text="Share"
+            android:layout_width="150dp"
+            android:layout_marginTop="12dp"/>
+
+    </LinearLayout>
+</ScrollView>

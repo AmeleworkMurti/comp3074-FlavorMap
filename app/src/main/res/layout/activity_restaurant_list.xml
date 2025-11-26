@@ -94,6 +94,14 @@
             android:nestedScrollingEnabled="false"
             tools:listitem="@layout/item_restaurant"/>
 
+        <!-- About Us button at the bottom -->
+        <Button
+            android:id="@+id/aboutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="About Us"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

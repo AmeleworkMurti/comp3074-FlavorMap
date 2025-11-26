@@ -12,6 +12,12 @@
         <activity
             android:name=".ui.MainActivity"
             android:exported="false" />
+
+        <activity android:name=".ui.RestaurantDetailsActivity"></activity>
+        <activity android:name=".ui.AddRestaurantActivity"/>
+
+        <activity android:name=".ui.AboutUsActivity" />
+
         <activity
             android:name=".ui.SplashActivity"
             android:exported="true">
