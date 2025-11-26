@@ -18,6 +18,7 @@ import com.example.flavormap.adapters.CuisineAdapter;
 import com.example.flavormap.adapters.RestaurantAdapter;
 import com.example.flavormap.models.Cuisine;
 import com.example.flavormap.models.Restaurant;
+import com.example.flavormap.storage.RestaurantStorage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -46,40 +47,20 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_list);
 
+        restaurantList = RestaurantStorage.loadRestaurants(this);
+
+        if (restaurantList.isEmpty()) {
+            // Add demo restaurants ONLY first time
+            restaurantList.add(new Restaurant("Sushi Place","Sushi","⭐⭐⭐⭐","123 Eglinton Ave",4370000000L,"Amazing food",R.drawable.ic_launcher_background));
+            restaurantList.add(new Restaurant("Pasta House","Italian","⭐⭐⭐","456 Uptown Street",4371112222L,"Delicious pasta",R.drawable.ic_launcher_background));
+            restaurantList.add(new Restaurant("Green Veggies","Vegan","⭐⭐⭐⭐⭐","789 Midtown Blvd",4373334444L,"Healthy and fresh",R.drawable.ic_launcher_background));
+        }
+
+
         // --- Main restaurant grid ---
         recyclerView = findViewById(R.id.restaurantRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
-        restaurantList = new ArrayList<>();
-        restaurantList.add(new Restaurant(
-                "Sushi Place",      // name
-                "Sushi",            // cuisine
-                "⭐⭐⭐⭐",             // rating
-                "123 Eglinton Ave", // location (address)
-                4370000000L,        // phone (long, note the L)
-                "Amazing food",     // description
-                R.drawable.ic_launcher_background // image
-        ));
-
-        restaurantList.add(new Restaurant(
-                "Pasta House",
-                "Italian",
-                "⭐⭐⭐",
-                "456 Uptown Street",
-                4371112222L,
-                "Delicious pasta",
-                R.drawable.ic_launcher_background
-        ));
-
-        restaurantList.add(new Restaurant(
-                "Green Veggies",
-                "Vegan",
-                "⭐⭐⭐⭐⭐",
-                "789 Midtown Blvd",
-                4373334444L,
-                "Healthy and fresh",
-                R.drawable.ic_launcher_background
-        ));
 
         adapter = new RestaurantAdapter(this, restaurantList);
 
@@ -144,8 +125,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         addButton = findViewById(R.id.addRestaurantButton);
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(RestaurantListActivity.this, AddRestaurantActivity.class);
-            /*startActivityForResult(intent, ADD_RESTAURANT_REQUEST);*/
-            /*ActivityResultLauncher<Intent> launcher;*/
             addRestaurantLauncher.launch(intent);
 
         });
@@ -189,6 +168,8 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                     restaurantList.add(newRestaurant);
                     adapter.notifyItemInserted(restaurantList.size() - 1);
+                    RestaurantStorage.saveRestaurants(this, restaurantList);
+
                 }
             });
     private ActivityResultLauncher<Intent> detailsLauncher =
@@ -207,6 +188,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 if ("delete".equals(action)) {
                     restaurantList.remove(position);
                     adapter.notifyItemRemoved(position);
+                    RestaurantStorage.saveRestaurants(this, restaurantList);
                 }
                 else if ("edit".equals(action)) {
 
@@ -227,46 +209,10 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                     restaurantList.set(position, updated);
                     adapter.notifyItemChanged(position);
+                    RestaurantStorage.saveRestaurants(this, restaurantList);
                 }
             });
 
-  /*  // --- Receive new restaurant from AddRestaurantActivity ---
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ADD_RESTAURANT_REQUEST && resultCode == RESULT_OK && data != null) {
-            String name = data.getStringExtra("name");
-            String cuisine = data.getStringExtra("cuisine");
-            String rating = data.getStringExtra("rating"); // must be String
-            String location = data.getStringExtra("location");
-            String description = data.getStringExtra("description");
-            String phoneStr = data.getStringExtra("phone"); // phone number as String
-
-            long phoneLong = 0;
-            try {
-                phoneLong = Long.parseLong(phoneStr); // parse String to long
-            } catch (NumberFormatException e) {
-                phoneLong = 0;
-            }
-
-
-            Restaurant newRestaurant = new Restaurant(
-                    name,        // String
-                    cuisine,     // String
-                    rating,      // String
-                    location,    // String
-                    phoneLong,   // long
-                    description, // String
-                    R.drawable.ic_launcher_background // int
-            );
-
-
-            restaurantList.add(newRestaurant);
-            adapter.notifyItemInserted(restaurantList.size() - 1);
-        }
-    }
-*/
     // Filter method outside onCreate
     private void filterRestaurants(String text) {
         List<Restaurant> filteredList = new ArrayList<>();

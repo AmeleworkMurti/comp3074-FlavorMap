@@ -19,8 +19,13 @@ import java.util.List;
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.RestaurantViewHolder> {
 
     private Context context;
-    private List<Restaurant> restaurantList;
 
+    // full list from Activity (source of truth)
+    private List<Restaurant> originalList;
+
+    // filtered / visible list
+    private List<Restaurant> displayList;
+    private List<Restaurant> restaurantList;
 
     public RestaurantAdapter(Context context, List<Restaurant> restaurantList) {
         this.context = context;
@@ -72,8 +77,9 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Re
     }
 
 
-    public void updateList(List<Restaurant> newList) {
-        this.restaurantList = newList;
+    public void updateList(List<Restaurant> filteredList) {
+        this.restaurantList.clear();
+        this.restaurantList.addAll(filteredList);
         notifyDataSetChanged();
     }
     @Override
