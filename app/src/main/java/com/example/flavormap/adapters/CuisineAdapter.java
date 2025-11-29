@@ -15,32 +15,72 @@ import java.util.List;
 
 public class CuisineAdapter extends RecyclerView.Adapter<CuisineAdapter.CuisineViewHolder> {
 
-    private List<Cuisine> cuisineList;
+    public interface OnCuisineClickListener {
+        void onCuisineClick(String cuisineName);
+    }
 
-    public CuisineAdapter(List<Cuisine> cuisineList) { this.cuisineList = cuisineList; }
+    private final List<Cuisine> cuisines;
+    private final OnCuisineClickListener listener;
+    private int selectedPosition = -1;
+
+    public CuisineAdapter(List<Cuisine> cuisines, OnCuisineClickListener listener) {
+        this.cuisines = cuisines;
+        this.listener = listener;
+    }
 
     @NonNull
     @Override
     public CuisineViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cuisine, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_cuisine_chip, parent, false);
         return new CuisineViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CuisineViewHolder holder, int position) {
-        Cuisine cuisine = cuisineList.get(position);
-        holder.cuisineName.setText(cuisine.getName());
+        Cuisine cuisine = cuisines.get(position);
+        holder.name.setText(cuisine.getName());
+
+        // Apply selected/unselected style
+        holder.name.setTypeface(
+                null,
+                position == selectedPosition
+                        ? android.graphics.Typeface.BOLD
+                        : android.graphics.Typeface.NORMAL
+        );
+
+        holder.itemView.setOnClickListener(v -> {
+            int adapterPos = holder.getAdapterPosition();
+            if (adapterPos == RecyclerView.NO_POSITION) return;
+
+            int oldPos = selectedPosition;
+
+            // Toggle selection
+            if (selectedPosition == adapterPos) {
+                selectedPosition = -1;
+                listener.onCuisineClick("All");
+            } else {
+                selectedPosition = adapterPos;
+                listener.onCuisineClick(cuisines.get(adapterPos).getName());
+            }
+
+            // Update UI
+            if (oldPos >= 0) notifyItemChanged(oldPos);
+            notifyItemChanged(adapterPos);
+        });
     }
 
     @Override
-    public int getItemCount() { return cuisineList.size(); }
+    public int getItemCount() {
+        return cuisines.size();
+    }
 
     static class CuisineViewHolder extends RecyclerView.ViewHolder {
-        TextView cuisineName;
+        TextView name;
+
         public CuisineViewHolder(@NonNull View itemView) {
             super(itemView);
-            cuisineName = itemView.findViewById(R.id.cuisineName);
+            name = itemView.findViewById(R.id.cuisineName);
         }
     }
 }
-

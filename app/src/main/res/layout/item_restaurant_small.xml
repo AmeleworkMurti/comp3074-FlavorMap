@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="200dp"
+    android:layout_width="280dp"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="16dp"
@@ -11,22 +10,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="8dp">
 
-        <!-- *** SAFE IMAGE *** -->
+        <!-- LEFT IMAGE -->
         <ImageView
             android:id="@+id/restaurantImage"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
-            android:src="@drawable/res_6" />
+            android:background="@drawable/res_2"
+            android:src="@drawable/res_2" />
 
+        <!-- RIGHT TEXT CONTENT -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:orientation="vertical">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="8dp">
 
             <TextView
                 android:id="@+id/restaurantName"
@@ -35,7 +37,7 @@
                 android:text="Restaurant Name"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#000"/>
+                android:textColor="#000" />
 
             <TextView
                 android:id="@+id/restaurantCuisine"
@@ -43,37 +45,41 @@
                 android:layout_height="wrap_content"
                 android:text="Cuisine"
                 android:textSize="14sp"
-                android:textColor="#444"/>
-
-            <TextView
-                android:id="@+id/restaurantRating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⭐⭐⭐⭐⭐"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"/>
+                android:textColor="#555" />
 
             <TextView
                 android:id="@+id/restaurantLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="123 Street"
+                android:text="Location"
                 android:textSize="12sp"
-                android:textColor="#555"
-                android:layout_marginTop="4dp"/>
+                android:layout_marginTop="4dp"
+                android:textColor="#555"/>
 
+
+            <TextView
+                android:id="@+id/restaurantRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⭐⭐⭐⭐"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
+
+            <!-- Likes row -->
             <LinearLayout
+                android:id="@+id/likeContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="6dp">
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/likeIcon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_red_heart"/>
+                    android:src="@drawable/ic_red_heart"
+                    android:padding="2dp" />
 
                 <TextView
                     android:id="@+id/likesCount"
@@ -81,10 +87,10 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textSize="14sp"
-                    android:layout_marginStart="4dp"
-                    android:textColor="#000"/>
-
+                    android:layout_marginStart="4dp" />
             </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

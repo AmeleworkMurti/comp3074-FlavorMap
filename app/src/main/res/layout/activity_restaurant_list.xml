@@ -1,106 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="16dp">
 
-        <!-- Top bar: logo + FlavorMap -->
+        <!-- Header -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingBottom="8dp">
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
             <ImageView
-                android:id="@+id/logoTop"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_flavormap"/>
+                android:id="@+id/appLogo"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_flavormap" />
 
             <TextView
-                android:id="@+id/appName"
+                android:id="@+id/appTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Flavor Map"
+                android:layout_marginStart="8dp"
+                android:text="FlavorMap"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginStart="8dp"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Search bar -->
+        <!-- Search -->
         <SearchView
             android:id="@+id/restaurantSearchView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:queryHint="Search restaurants"
             android:iconifiedByDefault="false"
-            android:layout_marginBottom="8dp"/>
+            android:queryHint="Search restaurants..." />
 
-        <!-- Grid of restaurant cards -->
+        <!-- Your Lists section title -->
+        <TextView
+            android:id="@+id/yourListsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Lists"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Horizontal list: Your Lists -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/restaurantRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
+            android:overScrollMode="never"
+            android:nestedScrollingEnabled="false" />
 
-        <!-- Add Restaurant Floating Button -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <!-- Add Restaurant button -->
+        <Button
             android:id="@+id/addRestaurantButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/more"
-            android:contentDescription="Add Restaurant"
-            android:layout_gravity="center"
-            android:layout_marginTop="26dp"
-            android:tint="@color/white"/>
+            android:text="Add Restaurant"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/purple_500"
+            android:textColor="@android:color/white"
+            app:backgroundTint="@color/purple_500" />
 
-        <!-- Browse by Cuisine Horizontal RecyclerView -->
+        <!-- Browse by Cuisine title -->
         <TextView
+            android:id="@+id/browseTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Browse by Cuisine"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/cuisineRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:clipToPadding="false"/>
-
-
-        <!-- Most liked food Horizontal RecyclerView -->
-        <TextView
+        <!-- Browse by Cuisine chips/tags -->
+        <LinearLayout
+            android:id="@+id/cuisineTagContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your Most Liked Food"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="8dp"
 
+            android:gravity="start"
+            android:padding="4dp" />
+
+
+        <!-- Empty state (shown when filters/search return nothing) -->
+        <TextView
+            android:id="@+id/noResultsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No restaurants found."
+            android:textSize="14sp"
+            android:layout_marginTop="12dp"
+            android:visibility="gone" />
+
+        <!-- Your Top Rated title -->
+        <TextView
+            android:id="@+id/topRatedTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Top Rated"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Horizontal list: Your Top Rated -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mostLikedRecyclerView"
-            android:layout_width="250dp"
-            android:layout_height="160dp"
-            android:layout_marginTop="8dp"
-            android:nestedScrollingEnabled="false"
-            tools:listitem="@layout/item_restaurant"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"
+            android:nestedScrollingEnabled="false" />
 
-        <!-- About Us button at the bottom -->
+        <!-- About Us button -->
         <Button
             android:id="@+id/aboutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="About Us"
-            android:layout_marginTop="16dp"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="16dp" />
 
     </LinearLayout>

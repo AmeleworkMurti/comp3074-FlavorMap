@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +22,12 @@ public class AddRestaurantActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_restaurant);
+
+        ImageView backBtn = findViewById(R.id.backButtonDetails);
+        backBtn.setOnClickListener(v -> {
+            getOnBackPressedDispatcher().onBackPressed();
+        });
+
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -77,7 +85,7 @@ public class AddRestaurantActivity extends AppCompatActivity {
 
 
 
-            // TODO: Save restaurant to my list, adapter, or database
+            // todo: Save restaurant to my list, adapter, or database
             Toast.makeText(this, name + " added!", Toast.LENGTH_LONG).show();
 
             // Optional: clear fields

@@ -24,7 +24,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     Restaurant currentRestaurant;
     int position;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +33,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         // Back arrow & title
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setTitle("Restaurant Details");
         }
 
@@ -59,6 +58,11 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         viewMapBtn = findViewById(R.id.viewMapBtn);
         directionsBtn = findViewById(R.id.directionsBtn);
         shareBtn = findViewById(R.id.shareBtn);
+
+        ImageView backButton = findViewById(R.id.backButtonDetails);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> finish());
+        }
 
         // Fill UI with data
         detailName.setText(currentRestaurant.getName());

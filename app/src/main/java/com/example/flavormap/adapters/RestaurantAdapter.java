@@ -7,99 +7,165 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.flavormap.R;
 import com.example.flavormap.models.Restaurant;
+import com.example.flavormap.storage.RestaurantStorage;
 import com.example.flavormap.ui.RestaurantDetailsActivity;
 import com.example.flavormap.ui.RestaurantListActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.RestaurantViewHolder> {
 
-    private Context context;
+    private final Context context;
+    private List<Restaurant> originalList;   // master list
+    private List<Restaurant> displayList;    // filtered list
+    private final boolean enableDetails;
+    private final boolean enableLikes;
 
-    // full list from Activity (source of truth)
-    private List<Restaurant> originalList;
+    // BIG (main section) vs SMALL (top rated)
+    private final boolean useBigCard;
 
-    // filtered / visible list
-    private List<Restaurant> displayList;
-    private List<Restaurant> restaurantList;
+    public RestaurantAdapter(Context context,
+                             List<Restaurant> restaurantList,
+                             boolean enableDetails,
+                             boolean enableLikes) {
 
-    public RestaurantAdapter(Context context, List<Restaurant> restaurantList) {
         this.context = context;
-        this.restaurantList = restaurantList;
+        this.originalList = restaurantList;
+        this.displayList = new ArrayList<>(restaurantList);
+        this.enableDetails = enableDetails;
+        this.enableLikes = enableLikes;
+
+        // Main list (details enabled) uses BIG cards like restaurant list
+        // Top rated (details disabled) uses SMALL cards like Top Rated section
+        this.useBigCard = enableDetails;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return useBigCard ? 1 : 2;
     }
 
     @NonNull
     @Override
     public RestaurantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        int layoutId = (viewType == 1)
+                ? R.layout.item_restaurant_big
+                : R.layout.item_restaurant_small;
+
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_restaurant, parent, false);
+                .inflate(layoutId, parent, false);
+
         return new RestaurantViewHolder(view);
     }
+
     @Override
     public void onBindViewHolder(@NonNull RestaurantViewHolder holder, int position) {
-        Restaurant restaurant = restaurantList.get(position);
+        Restaurant restaurant = displayList.get(position);
 
         holder.name.setText(restaurant.getName());
         holder.cuisine.setText(restaurant.getCuisine());
         holder.rating.setText(restaurant.getRating());
-        holder.image.setImageResource(restaurant.getImageResId());
         holder.location.setText(restaurant.getLocation());
+        holder.image.setImageResource(restaurant.getImageResId());
+        holder.likesCount.setText(String.valueOf(restaurant.getLikes()));
 
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, RestaurantDetailsActivity.class);
-            intent.putExtra("restaurant", restaurant);
-            intent.putExtra("position", position);
+        // DETAILS click – only for main list
+        if (enableDetails && context instanceof RestaurantListActivity) {
+            holder.itemView.setOnClickListener(v -> {
+                int originalIndex = originalList.indexOf(restaurant);
+                if (originalIndex < 0) return;
 
-            // Must go through RestaurantListActivity to get results
-            if (context instanceof RestaurantListActivity) {
+                Intent intent = new Intent(context, RestaurantDetailsActivity.class);
+                intent.putExtra("restaurant", restaurant);
+                intent.putExtra("position", originalIndex);
+
                 ((RestaurantListActivity) context).openDetailsForResult(intent);
-            }
-        });
+            });
+        } else {
+            holder.itemView.setOnClickListener(null);
+        }
 
-
-   /*     // CLICK LISTENER MUST BE INSIDE onBindViewHolder
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, RestaurantDetailsActivity.class);
-            intent.putExtra("name", restaurant.getName());
-            intent.putExtra("cuisine", restaurant.getCuisine());
-            intent.putExtra("location", restaurant.getLocation());
-            intent.putExtra("phone", restaurant.getPhone());
-            intent.putExtra("rating", restaurant.getRating());
-            intent.putExtra("image", restaurant.getImageResId());
-            intent.putExtra("description", restaurant.getDescription());
-            intent.putExtra("restaurant", restaurantList.get(position));
-            context.startActivity(intent);
-        });*/
+        // LIKE icon – only for main list
+        if (enableLikes) {
+            holder.likeIcon.setOnClickListener(v -> {
+                restaurant.setLikes(restaurant.getLikes() + 1);
+                holder.likesCount.setText(String.valueOf(restaurant.getLikes()));
+                RestaurantStorage.saveRestaurants(context.getApplicationContext(), originalList);
+            });
+        } else {
+            holder.likeIcon.setOnClickListener(null);
+        }
     }
 
-
-    public void updateList(List<Restaurant> filteredList) {
-        this.restaurantList.clear();
-        this.restaurantList.addAll(filteredList);
-        notifyDataSetChanged();
-    }
     @Override
     public int getItemCount() {
-        return restaurantList.size();
+        return displayList.size();
     }
 
-    public class RestaurantViewHolder extends RecyclerView.ViewHolder {
+    // Called when main list changes (add/edit/delete)
+    public void refreshData(List<Restaurant> newList) {
+        this.originalList = newList;
+        this.displayList = new ArrayList<>(newList);
+        notifyDataSetChanged();
+    }
 
-        TextView name, cuisine, rating, location;
-        ImageView image;
+    // Search filter (name or cuisine)
+    public void filter(String query) {
+        displayList.clear();
+
+        if (query == null || query.trim().isEmpty()) {
+            displayList.addAll(originalList);
+        } else {
+            String lower = query.toLowerCase();
+            for (Restaurant r : originalList) {
+                if (r.getName().toLowerCase().contains(lower)
+                        || r.getCuisine().toLowerCase().contains(lower)) {
+                    displayList.add(r);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    // Filter by cuisine (from chips)
+    public void filterByCuisine(String cuisine) {
+        displayList.clear();
+
+        if (cuisine == null || cuisine.equalsIgnoreCase("All")) {
+            displayList.addAll(originalList);
+        } else {
+            for (Restaurant r : originalList) {
+                if (r.getCuisine().equalsIgnoreCase(cuisine)) {
+                    displayList.add(r);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public static class RestaurantViewHolder extends RecyclerView.ViewHolder {
+
+        TextView name, cuisine, rating, location, likesCount;
+        ImageView image, likeIcon;
 
         public RestaurantViewHolder(@NonNull View itemView) {
             super(itemView);
+
             name = itemView.findViewById(R.id.restaurantName);
             cuisine = itemView.findViewById(R.id.restaurantCuisine);
             rating = itemView.findViewById(R.id.restaurantRating);
             location = itemView.findViewById(R.id.restaurantLocation);
             image = itemView.findViewById(R.id.restaurantImage);
+            likeIcon = itemView.findViewById(R.id.likeIcon);
+            likesCount = itemView.findViewById(R.id.likesCount);
         }
     }
-
 }

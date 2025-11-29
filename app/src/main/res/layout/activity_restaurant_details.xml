@@ -16,7 +16,13 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:padding="12dp">
-
+            <ImageView
+                android:id="@+id/backButtonDetails"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_back_arrow"
+                android:padding="4dp"
+                android:layout_marginEnd="8dp" />
             <ImageView
                 android:id="@+id/detailsLogo"
                 android:layout_width="40dp"
@@ -57,7 +63,7 @@
             android:layout_height="220dp"
             android:scaleType="centerCrop"
             android:layout_marginTop="12dp"
-            android:src="@drawable/ic_add" />
+            android:src="@drawable/res_6" />
 
         <!-- Name -->
         <TextView

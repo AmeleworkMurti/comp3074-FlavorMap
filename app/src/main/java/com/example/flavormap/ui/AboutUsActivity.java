@@ -2,6 +2,7 @@ package com.example.flavormap.ui;
 
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,17 +14,14 @@ public class AboutUsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_us);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("About FlavorMap");
+
+            getSupportActionBar().hide();
         }
-        Button backButton = findViewById(R.id.btnBackAbout);
-        backButton.setOnClickListener(v -> finish());
+        ImageView backBtn = findViewById(R.id.btnBackAbout);
+        backBtn.setOnClickListener(v -> {
+            finish();
+        });
+
     }
 
-    // Back arrow behavior
-    @Override
-    public boolean onSupportNavigateUp() {
-        getOnBackPressedDispatcher().onBackPressed();
-        return true;
-    }
 }

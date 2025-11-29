@@ -8,7 +8,7 @@ import com.example.flavormap.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DELAY = 5000; // 5 seconds
+    private static final int SPLASH_DELAY = 3000; // 3 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
