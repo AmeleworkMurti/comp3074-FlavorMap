@@ -6,8 +6,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-import androidx.appcompat.widget.Toolbar;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.flavormap.R;
@@ -18,23 +19,43 @@ public class AddRestaurantActivity extends AppCompatActivity {
             cuisineType, rating, description, contactInfo;
     private Button addRestaurantBtn;
 
+    private ImageView restaurantImagePreview;
+    private String selectedImageUri = "";
+
+    private final ActivityResultLauncher<String> imagePickerLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    selectedImageUri = uri.toString();
+                    restaurantImagePreview.setImageURI(uri);
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_restaurant);
 
+        // Back button
         ImageView backBtn = findViewById(R.id.backButtonDetails);
-        backBtn.setOnClickListener(v -> {
-            getOnBackPressedDispatcher().onBackPressed();
-        });
+        backBtn.setOnClickListener(v ->
+                getOnBackPressedDispatcher().onBackPressed()
+        );
 
+        // Image preview view
+        restaurantImagePreview = findViewById(R.id.restaurantImagePreview);
 
+        // Click to open gallery
+        restaurantImagePreview.setOnClickListener(v ->
+                imagePickerLauncher.launch("image/*")
+        );
+
+        // Toolbar title
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Add Restaurant");
         }
 
-        // Bind views
+        // Bind input fields
         restaurantName = findViewById(R.id.restaurantName);
         address = findViewById(R.id.address);
         cuisineType = findViewById(R.id.cuisineType);
@@ -43,7 +64,7 @@ public class AddRestaurantActivity extends AppCompatActivity {
         contactInfo = findViewById(R.id.contactInfo);
         addRestaurantBtn = findViewById(R.id.addRestaurantBtn);
 
-        // If opened from "Edit", prefill fields
+        // Prefill if editing
         Intent fromDetails = getIntent();
         if (fromDetails != null && fromDetails.hasExtra("name")) {
             restaurantName.setText(fromDetails.getStringExtra("name"));
@@ -54,8 +75,9 @@ public class AddRestaurantActivity extends AppCompatActivity {
             contactInfo.setText(fromDetails.getStringExtra("phone"));
         }
 
-        // Handle Add button click
+        // Handle Add button
         addRestaurantBtn.setOnClickListener(v -> {
+
             String name = restaurantName.getText().toString();
             String addr = address.getText().toString();
             String cuisine = cuisineType.getText().toString();
@@ -63,16 +85,17 @@ public class AddRestaurantActivity extends AppCompatActivity {
             String desc = description.getText().toString();
             String contact = contactInfo.getText().toString();
 
-            if(name.isEmpty() || addr.isEmpty() || cuisine.isEmpty()) {
+            if (name.isEmpty() || addr.isEmpty() || cuisine.isEmpty()) {
                 Toast.makeText(this, "Please fill in required fields", Toast.LENGTH_LONG).show();
                 return;
             }
-            // Rating as "4★" (if user only types 4)
+
+            // Format rating
             if (!rate.isEmpty() && !rate.contains("★") && !rate.startsWith("⭐")) {
                 rate = rate + "★";
             }
 
-            // Create intent to send back
+            // Return data to RestaurantListActivity
             Intent resultIntent = new Intent();
             resultIntent.putExtra("name", name);
             resultIntent.putExtra("address", addr);
@@ -80,28 +103,18 @@ public class AddRestaurantActivity extends AppCompatActivity {
             resultIntent.putExtra("rating", rate);
             resultIntent.putExtra("description", desc);
             resultIntent.putExtra("contact", contact);
+            resultIntent.putExtra("imageUri", selectedImageUri);
+
             setResult(RESULT_OK, resultIntent);
-            finish(); // closes AddRestaurant and goes back to MainActivity
+            finish();
 
-
-
-            // todo: Save restaurant to my list, adapter, or database
             Toast.makeText(this, name + " added!", Toast.LENGTH_LONG).show();
-
-            // Optional: clear fields
-            restaurantName.setText("");
-            address.setText("");
-            cuisineType.setText("");
-            rating.setText("");
-            description.setText("");
-            contactInfo.setText("");
         });
     }
-    // Back arrow behavior
+
     @Override
     public boolean onSupportNavigateUp() {
         getOnBackPressedDispatcher().onBackPressed();
         return true;
     }
 }
-

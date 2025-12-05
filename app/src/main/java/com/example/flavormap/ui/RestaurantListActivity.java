@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.flavormap.R;
 import com.example.flavormap.adapters.RestaurantAdapter;
+import com.example.flavormap.db.RestaurantRepository;
 import com.example.flavormap.models.Restaurant;
-import com.example.flavormap.storage.RestaurantStorage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,10 +32,13 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     private RestaurantAdapter mainAdapter, mostLikedAdapter;
 
-    private List<Restaurant> restaurantList, mostLiked;
+    private List<Restaurant> restaurantList = new ArrayList<>();
+    private List<Restaurant> mostLiked = new ArrayList<>();
 
     private Button addButton;
     private TextView noResultsText;
+
+    private RestaurantRepository repository;
 
     // Exposed so adapter can launch details
     public void openDetailsForResult(Intent intent) {
@@ -47,23 +50,48 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_list);
 
-        // Load restaurants from storage
-        restaurantList = RestaurantStorage.loadRestaurants(this);
+        repository = new RestaurantRepository(this);
 
+        // 1) Load from Room
+        restaurantList = repository.getAllRestaurants();
+
+        // 2) Seed sample data if empty (FIRST APP LAUNCH)
         if (restaurantList.isEmpty()) {
-            restaurantList.add(new Restaurant("Sushi Place", "Sushi", "⭐⭐⭐⭐",
-                    "123 Eglinton Ave", 4370000000L,
-                    "Amazing food", R.drawable.res_6));
+            Restaurant r1 = new Restaurant(
+                    "Sushi Place",
+                    "Sushi",
+                    "⭐⭐⭐⭐",
+                    "123 Eglinton Ave",
+                    4370000000L,
+                    "Amazing food",
+                    ""   // no image → will use default card image
+            );
 
-            restaurantList.add(new Restaurant("Pasta House", "Italian", "⭐⭐⭐",
-                    "456 Uptown Street", 4371112222L,
-                    "Delicious pasta", R.drawable.res_6));
+            Restaurant r2 = new Restaurant(
+                    "Pasta House",
+                    "Italian",
+                    "⭐⭐⭐",
+                    "456 Uptown Street",
+                    4371112222L,
+                    "Delicious pasta",
+                    ""
+            );
 
-            restaurantList.add(new Restaurant("Green Veggies", "Vegan", "⭐⭐⭐⭐⭐",
-                    "789 Midtown Blvd", 4373334444L,
-                    "Healthy and fresh", R.drawable.res_6));
+            Restaurant r3 = new Restaurant(
+                    "Green Veggies",
+                    "Vegan",
+                    "⭐⭐⭐⭐⭐",
+                    "789 Midtown Blvd",
+                    4373334444L,
+                    "Healthy and fresh",
+                    ""
+            );
 
-            RestaurantStorage.saveRestaurants(this, restaurantList);
+            repository.insertRestaurant(r1);
+            repository.insertRestaurant(r2);
+            repository.insertRestaurant(r3);
+
+            restaurantList = repository.getAllRestaurants();
         }
 
         // Bind views
@@ -81,7 +109,7 @@ public class RestaurantListActivity extends AppCompatActivity {
         mainAdapter = new RestaurantAdapter(this, restaurantList, true, true);
         restaurantRecycler.setAdapter(mainAdapter);
 
-        // --- Add cuisine tags
+        // Add cuisine tags
         addCuisineTag("Sushi");
         addCuisineTag("Pizza");
         addCuisineTag("Vegan");
@@ -130,8 +158,7 @@ public class RestaurantListActivity extends AppCompatActivity {
         updateEmptyState();
     }
 
-
-    // Cuisine Tag Generator
+    //  Cuisine Tag Generator
 
     private void addCuisineTag(String label) {
         TextView tag = new TextView(this);
@@ -149,7 +176,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         params.setMargins(12, 8, 12, 8);
         tag.setLayoutParams(params);
 
-        // Click → filters main list
         tag.setOnClickListener(v -> {
             mainAdapter.filter(label);
             updateEmptyState();
@@ -164,8 +190,7 @@ public class RestaurantListActivity extends AppCompatActivity {
         );
     }
 
-
-    // Handle Add Restaurant results
+    //  Add Restaurant result
 
     private final ActivityResultLauncher<Intent> addRestaurantLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -180,34 +205,38 @@ public class RestaurantListActivity extends AppCompatActivity {
                     String location = data.getStringExtra("address");
                     String description = data.getStringExtra("description");
                     String phoneStr = data.getStringExtra("contact");
+                    String imageUri = data.getStringExtra("imageUri");
 
                     long phoneLong = 0;
                     try {
                         phoneLong = Long.parseLong(phoneStr);
                     } catch (Exception ignored) {}
 
+                    if (imageUri == null) imageUri = "";
+
                     Restaurant newRestaurant = new Restaurant(
                             name, cuisine, rating, location, phoneLong,
-                            description, R.drawable.res_6
+                            description, imageUri
                     );
 
+                    // Persist in Room
+                    repository.insertRestaurant(newRestaurant);
+
+                    // Update in-memory lists
                     restaurantList.add(newRestaurant);
-                    RestaurantStorage.saveRestaurants(this, restaurantList);
 
-                    mainAdapter.refreshData(restaurantList);
-
-                    // Update top rated
+                    // Rebuild top rated
                     mostLiked.clear();
                     mostLiked.addAll(restaurantList);
                     Collections.sort(mostLiked, (a, b) -> Integer.compare(b.getLikes(), a.getLikes()));
                     mostLikedAdapter.refreshData(mostLiked);
 
+                    mainAdapter.refreshData(restaurantList);
                     updateEmptyState();
                 }
             });
 
-
-    // Handle Edit/Delete
+    //  Edit / Delete result
 
     private final ActivityResultLauncher<Intent> detailsLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -222,8 +251,12 @@ public class RestaurantListActivity extends AppCompatActivity {
                 if (position < 0 || position >= restaurantList.size())
                     return;
 
+                Restaurant target = restaurantList.get(position);
+
                 if ("delete".equals(action)) {
 
+                    // Delete from DB and list
+                    repository.deleteRestaurant(target);
                     restaurantList.remove(position);
 
                 } else if ("edit".equals(action)) {
@@ -234,17 +267,28 @@ public class RestaurantListActivity extends AppCompatActivity {
                     String location = data.getStringExtra("address");
                     String description = data.getStringExtra("description");
                     String phoneStr = data.getStringExtra("contact");
+                    String imageUri = data.getStringExtra("imageUri");
 
                     long phone = 0;
                     try { phone = Long.parseLong(phoneStr); } catch (Exception ignored) {}
 
-                    restaurantList.set(position, new Restaurant(
-                            name, cuisine, rating, location, phone,
-                            description, R.drawable.res_6
-                    ));
+                    // Update fields on existing model
+                    target.setName(name);
+                    target.setCuisine(cuisine);
+                    target.setRating(rating);
+                    target.setLocation(location);
+                    target.setDescription(description);
+                    target.setPhone(phone);
+
+                    if (imageUri != null && !imageUri.isEmpty()) {
+                        target.setImageUri(imageUri);
+                    }
+
+                    // Persist changes
+                    repository.updateRestaurant(target);
                 }
 
-                RestaurantStorage.saveRestaurants(this, restaurantList);
+                // Refresh adapters from updated list
                 mainAdapter.refreshData(restaurantList);
 
                 mostLiked.clear();

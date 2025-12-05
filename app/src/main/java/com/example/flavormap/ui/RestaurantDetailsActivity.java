@@ -71,7 +71,14 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         detailPhone.setText("Phone: " + currentRestaurant.getPhone());
         detailRating.setText("⭐ Rating: " + currentRestaurant.getRating());
         detailDescription.setText(currentRestaurant.getDescription());
-        detailImage.setImageResource(currentRestaurant.getImageResId());
+        String imgUri = currentRestaurant.getImageUri();
+
+        if (imgUri != null && !imgUri.isEmpty()) {
+            detailImage.setImageURI(Uri.parse(imgUri));
+        } else {
+            detailImage.setImageResource(R.drawable.res_6); // fallback image
+        }
+
 
         // Directions -> navigation from current location
         directionsBtn.setOnClickListener(v -> {

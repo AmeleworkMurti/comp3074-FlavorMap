@@ -2,6 +2,7 @@ package com.example.flavormap.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.flavormap.R;
 import com.example.flavormap.models.Restaurant;
-import com.example.flavormap.storage.RestaurantStorage;
 import com.example.flavormap.ui.RestaurantDetailsActivity;
 import com.example.flavormap.ui.RestaurantListActivity;
 
@@ -42,8 +42,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Re
         this.enableDetails = enableDetails;
         this.enableLikes = enableLikes;
 
-        // Main list (details enabled) uses BIG cards like restaurant list
-        // Top rated (details disabled) uses SMALL cards like Top Rated section
+        // Main list uses big cards; top-rated uses small cards
         this.useBigCard = enableDetails;
     }
 
@@ -74,8 +73,15 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Re
         holder.cuisine.setText(restaurant.getCuisine());
         holder.rating.setText(restaurant.getRating());
         holder.location.setText(restaurant.getLocation());
-        holder.image.setImageResource(restaurant.getImageResId());
         holder.likesCount.setText(String.valueOf(restaurant.getLikes()));
+
+        // Load image: user-selected if available, otherwise default drawable
+        String imageUri = restaurant.getImageUri();
+        if (imageUri != null && !imageUri.isEmpty()) {
+            holder.image.setImageURI(Uri.parse(imageUri));
+        } else {
+            holder.image.setImageResource(R.drawable.res_6); // our default card image
+        }
 
         // DETAILS click – only for main list
         if (enableDetails && context instanceof RestaurantListActivity) {
@@ -93,12 +99,12 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Re
             holder.itemView.setOnClickListener(null);
         }
 
-        // LIKE icon – only for main list
+        // LIKE icon – only for main list (just updates in-memory for now)
         if (enableLikes) {
             holder.likeIcon.setOnClickListener(v -> {
                 restaurant.setLikes(restaurant.getLikes() + 1);
                 holder.likesCount.setText(String.valueOf(restaurant.getLikes()));
-                RestaurantStorage.saveRestaurants(context.getApplicationContext(), originalList);
+
             });
         } else {
             holder.likeIcon.setOnClickListener(null);

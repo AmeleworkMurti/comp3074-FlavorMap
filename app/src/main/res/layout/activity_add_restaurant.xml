@@ -5,17 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-   <!-- <androidx.appcompat.widget.Toolbar
-        android:id="@+id/addToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@color/purple_500"
-        android:title="Add Restaurant"
-        android:titleTextColor="@android:color/white"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:elevation="4dp"
-        android:layout_marginTop="15dp"/>-->
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -28,25 +17,26 @@
             android:gravity="center_horizontal"
             android:layout_marginTop="15dp">
 
-            <!-- Logo + App Name -->
+            <!-- Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
+
                 <ImageView
                     android:id="@+id/backButtonDetails"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_back_arrow"
                     android:padding="4dp"
-                    android:layout_marginEnd="12dp" />
+                    android:layout_marginEnd="12dp"/>
 
                 <ImageView
                     android:id="@+id/detailsLogo"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_flavormap" />
+                    android:src="@drawable/ic_flavormap"/>
 
                 <TextView
                     android:id="@+id/detailsTitle"
@@ -58,7 +48,30 @@
                     android:paddingStart="8dp"/>
             </LinearLayout>
 
-            <!-- Editable Fields -->
+
+            <!--  image Preview -->
+            <ImageView
+                android:id="@+id/restaurantImagePreview"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/res_6"
+                android:scaleType="centerCrop"
+                android:background="#DDDDDD"
+                android:layout_gravity="center"
+                android:contentDescription="Preview Image" />
+
+
+            <!-- Upload button -->
+            <Button
+                android:id="@+id/uploadImageBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Image"
+                android:layout_marginTop="10dp"/>
+
+
+            <!-- Existing editable fields -->
             <EditText
                 android:id="@+id/restaurantName"
                 android:layout_width="match_parent"
@@ -109,6 +122,7 @@
                 android:layout_height="wrap_content"
                 android:text="Add Restaurant"
                 android:layout_marginTop="24dp"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
